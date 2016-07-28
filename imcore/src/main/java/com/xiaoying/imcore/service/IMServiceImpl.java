@@ -11,17 +11,18 @@ import com.xiaoying.imapi.XYOperationCallback;
 import com.xiaoying.imapi.api.UserInfoProvider;
 import com.xiaoying.imapi.message.XYMessage;
 import com.xiaoying.imapi.message.XYMessageContent;
+import com.xiaoying.imapi.model.ErrorCode;
 import com.xiaoying.imapi.service.IMService;
+import com.xiaoying.imcore.liveapp.xyim.rongyun.RongMessage;
+import com.xiaoying.imcore.liveapp.xyim.rongyun.RongMessageContent;
 import com.xiaoying.imcore.livekit.RongIM;
 
 import android.content.Context;
-import android.os.Parcel;
 import android.util.Log;
 
 import io.rong.imlib.RongIMClient;
 import io.rong.imlib.model.Conversation;
 import io.rong.imlib.model.Message;
-import io.rong.imlib.model.MessageContent;
 import io.rong.imlib.model.UserInfo;
 
 /**
@@ -54,8 +55,9 @@ public class IMServiceImpl implements IMService {
     }
 
     @Override
-    public void registerMessageType(Class messageContentClass) {
-        RongIM.getInstance().registerMessageType(messageContentClass);
+    public void registerMessageType(Class<? extends XYMessageContent> messageContentClass) {
+        RongIM.getInstance().registerMessageType(RongMessageContent.class);
+        RongIM.getInstance().registerMessageType(RongMessage.class);
     }
 
     @Override
@@ -80,25 +82,18 @@ public class IMServiceImpl implements IMService {
     }
 
     @Override
-    public void sendMessage(final XYMessage msg, XYIMSendMessageCallback callback, XYIMResultCallback result) {
-        RongIM.getInstance().sendMessage(Message.obtain(msg.getTargetId(), Conversation.ConversationType.setValue(msg.getConversationType().getValue()), new MessageContent() {
-            XYMessageContent mContent = msg.getContent();
-
+    public void sendMessage(final XYMessage msg, XYIMSendMessageCallback callback, final XYIMResultCallback<XYMessage> result) {
+        RongIM.getInstance().sendMessage(msg, callback, new XYIMResultCallback<Message>() {
             @Override
-            public byte[] encode() {
-                return mContent.encode();
+            public void onSuccess(XYMessage message) {
+                result.onSuccess(message);
             }
 
             @Override
-            public int describeContents() {
-                return mContent.describeContents();
+            public void onError(ErrorCode var1) {
+                result.onError(var1);
             }
-
-            @Override
-            public void writeToParcel(Parcel parcel, int i) {
-                mContent.writeToParcel(parcel, i);
-            }
-        }), callback, result);
+        });
     }
 
     @Override

@@ -2,7 +2,6 @@ package io.rong.liveapp;
 
 import com.xiaoying.imapi.XYIMUserInfo;
 import com.xiaoying.imapi.message.XYMessageContent;
-import com.xiaoying.imapi.message.XYMessageTag;
 import com.xiaoying.imapi.util.XYParcelUtils;
 
 import org.json.JSONException;
@@ -12,7 +11,9 @@ import android.os.Parcel;
 
 import java.io.UnsupportedEncodingException;
 
-@XYMessageTag(value = "RC:NoneMsg", flag = XYMessageTag.NONE)
+import io.rong.imlib.MessageTag;
+
+@MessageTag(value = "RC:NoneMsg", flag = MessageTag.NONE)
 public class NoneMessage extends XYMessageContent {
 
     private String content;
@@ -98,4 +99,9 @@ public class NoneMessage extends XYMessageContent {
             return new NoneMessage[size];
         }
     };
+
+    @Override
+    public String getMessage() {
+        return content;
+    }
 }

@@ -1,9 +1,12 @@
 package io.rong.liveapp;
 
-import com.dynamicload.framework.util.FrameworkUtil;
+//import com.dynamicload.framework.util.FrameworkUtil;
+
 import com.xiaoying.imapi.XYIMOnReceiveMessageListener;
 import com.xiaoying.imapi.api.BusEvent;
+import com.xiaoying.imapi.message.XYEmoji;
 import com.xiaoying.imapi.message.XYMessage;
+import com.xiaoying.imapi.message.XYTextMessage;
 import com.xiaoying.imapi.service.IMService;
 
 import android.app.ActivityManager;
@@ -25,8 +28,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         if (!isIint) {
-            FrameworkUtil.setContext(this);
-            FrameworkUtil.prepare();
+            XYEmoji.init(this);
+//            FrameworkUtil.setContext(this);
+//            FrameworkUtil.prepare();
             imService = IMUtil.getIMService();
             isIint = true;
         }
@@ -46,6 +50,8 @@ public class App extends Application {
                     imService.registerMessageType(NoneMessage.class);
                     imService.registerMessageTemplate(new NoneMessageTemplate());
 
+                    imService.registerMessageType(XYInformationNotificationMessage.class);
+                    imService.registerMessageType(XYTextMessage.class);
                     imService.registerMessageTemplate(new TextMessageTemplate());
                     imService.registerMessageTemplate(new InformationNotificationMessageTemplate());
                     imService.registerMessageEvent(new XYIMOnReceiveMessageListener() {
